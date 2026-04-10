@@ -1,0 +1,21 @@
+# Sample minimal Prometheus configuration for the agentic development platform
+global:
+  scrape_interval: 15s
+  external_labels:
+    monitor: "agentic-dev-monitor"
+
+rule_files:
+  - "alert.rules"
+
+scrape_configs:
+  - job_name: "agentic-dev-mcp"
+    static_configs:
+      - targets: ["localhost:3333"]
+
+  - job_name: "agentic-dev-app"
+    static_configs:
+      - targets: ["localhost:8000"]
+
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
