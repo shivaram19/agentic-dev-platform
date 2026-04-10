@@ -1,0 +1,68 @@
+# Agentic Development Platform - System configuration
+#
+# This file centralizes environment‑specific settings for:
+#   - LLM backends and default models
+#   - MCP tool servers
+#   - Project registry defaults
+#   - Voice / transcription services
+#
+# It is intentionally small and opinionated so it can be safely checked into Git.
+
+llm:
+  default_backend: anthropic
+  default_model_id: claude-3-5-sonnet-20241022
+  backends:
+    anthropic:
+      api_key_env: ANTHROPIC_API_KEY
+      base_url: https://api.anthropic.com
+      max_tokens: 4096
+      temperature: 0.3
+    ollama:
+      base_url: http://localhost:11434/v1
+      api_key_env: OLLAMA_API_KEY
+      max_tokens: 2048
+      temperature: 0.4
+
+mcp:
+  # MCP servers that should be launched and connected at startup.
+  servers:
+    - name: filesystem
+      command: ["node", "servers/filesystem-server.js"]
+      auto_start: true
+    - name: git
+      command: ["node", "servers/git-server.js"]
+      auto_start: true
+    - name: tests
+      command: ["python", "-m", "servers.tests_server"]
+      auto_start: false
+
+projects:
+  # Default root directory for local projects.
+  default_root: ./projects
+  # Optional static project definitions that can be pre‑loaded into the registry.
+  predefined:
+    - project_id: sample-app
+      root_path: ./projects/sample-app
+      default_agent_id: code-agent
+      tags:
+        stack: python
+        framework: fastapi
+    - project_id: docs-site
+      root_path: ./projects/docs-site
+      default_agent_id: code-agent
+      tags:
+        stack: javascript
+        framework: astro
+
+voice:
+  # High‑level toggles for voice‑driven workflows.
+  enabled: true
+  transcription:
+    provider: whisper-local
+    language: en
+    sample_rate: 16000
+  intent_parser:
+    backend: anthropic
+    model_id: claude-3-5-sonnet-20241022
+    max_tokens: 512
+    temperature: 0.1
